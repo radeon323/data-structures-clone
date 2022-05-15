@@ -23,6 +23,7 @@ public class ArrayList<E> implements List<E> {
     @Override
     public void add(E value, int index) {
         if (index <= size) {
+            list[index + 1] = list[index];
             list[index] = value;
             size++;
         } else {

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ArrayListTest {
 
-    private final ArrayList list = new ArrayList();
+    private final ArrayList<String> list = new ArrayList<>();
 
     @Test
     void testAdd() {
@@ -23,10 +23,10 @@ class ArrayListTest {
         list.add("B",1);
         list.add("C",2);
         list.add("D",2);
+        assertEquals("C", list.remove(3));
         assertEquals("D", list.remove(2));
         assertEquals("B", list.remove(1));
         assertEquals("A", list.remove(0));
-        assertNull(list.remove(0));
         assertEquals(0, list.size());
         assertTrue(list.isEmpty());
     }
