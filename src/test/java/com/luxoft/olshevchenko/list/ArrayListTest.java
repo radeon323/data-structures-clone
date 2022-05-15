@@ -10,11 +10,21 @@ class ArrayListTest {
     private final ArrayList<String> list = new ArrayList<>();
 
     @Test
-    void testAdd() {
+    void testAddAndCapacityIncrease() {
         list.add("A");
         list.add("B");
         list.add("C");
-        assertEquals(3, list.size());
+        list.add("D");
+        list.add("E");
+        list.add("F");
+        list.add("G");
+        list.add("H");
+        list.add("I");
+        list.add("J");
+        list.add("K");
+        list.add("L");
+        list.add("M");
+        assertEquals(13, list.size());
     }
 
     @Test

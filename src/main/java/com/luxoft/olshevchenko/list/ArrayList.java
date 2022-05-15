@@ -8,11 +8,13 @@ import java.util.StringJoiner;
  */
 public class ArrayList<E> implements List<E> {
 
-    private final Object[] list;
+    private final static double LOAD_FACTOR = 1.5;
+    private final static int DEFAULT_CAPACITY = 10;
     private int size = 0;
+    private Object[] list;
 
     public ArrayList() {
-        this.list = new Object[10];
+        this.list = new Object[DEFAULT_CAPACITY];
     }
 
     @Override
@@ -22,6 +24,11 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public void add(E value, int index) {
+        if (list.length == size + 1) {
+            Object[] tempArray = new Object[(int) (list.length * LOAD_FACTOR)];
+            System.arraycopy(list, 0, tempArray, 0, size);
+            list = tempArray;
+        }
         if (index <= size) {
             list[index + 1] = list[index];
             list[index] = value;
@@ -135,4 +142,5 @@ public class ArrayList<E> implements List<E> {
         }
         return stringJoiner.toString();
     }
+
 }
