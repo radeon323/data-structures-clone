@@ -1,5 +1,6 @@
 package com.luxoft.olshevchenko.list;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -11,10 +12,10 @@ public class ArrayList<E> implements List<E> {
     private final static double LOAD_FACTOR = 1.5;
     private final static int DEFAULT_CAPACITY = 10;
     private int size = 0;
-    private Object[] list;
+    private E [] list;
 
     public ArrayList() {
-        this.list = new Object[DEFAULT_CAPACITY];
+        this.list = (E[]) new Object[DEFAULT_CAPACITY];
     }
 
     @Override
@@ -25,12 +26,12 @@ public class ArrayList<E> implements List<E> {
     @Override
     public void add(E value, int index) {
         if (list.length == size + 1) {
-            Object[] tempArray = new Object[(int) (list.length * LOAD_FACTOR)];
+            E [] tempArray = (E[]) new Object[(int) (list.length * LOAD_FACTOR)];
             System.arraycopy(list, 0, tempArray, 0, size);
             list = tempArray;
         }
-        if (index <= size) {
-            list[index + 1] = list[index];
+        if (index <= size && index >= 0) {
+            System.arraycopy(list, index, list, index + 1, size - index + 1);
             list[index] = value;
             size++;
         } else {
@@ -40,8 +41,8 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public E remove(int index) {
-        if (index < size) {
-            E result = (E) list[index];
+        if (index < size && index >= 0) {
+            E result = list[index];
             for (int i = 0; i < size; i++) {
                 if (Objects.equals(list[i],list[index])){
                     list[i] = list[i+1];
@@ -56,7 +57,7 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public E get(int index) {
-        if (index >= size) {
+        if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("Index is out of bounds");
         }
         if (!isEmpty()) {
@@ -68,7 +69,7 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public E set(E value, int index) {
-        if (index >= size) {
+        if (index >= size || index < 0) {
             throw new IndexOutOfBoundsException("Index is out of bounds");
         }
         if (!isEmpty()) {
