@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -104,6 +107,7 @@ public abstract class ListTest {
         list.add("A");
         list.add("B");
         list.add("C");
+        assertEquals(3, list.size());
         assertEquals("A", list.get(0));
         assertEquals("B", list.get(1));
         assertEquals("C", list.get(2));
@@ -111,6 +115,7 @@ public abstract class ListTest {
         assertEquals("D", list.get(0));
         assertEquals("B", list.get(1));
         assertEquals("C", list.get(2));
+        assertEquals(3, list.size());
     }
 
     @Test
@@ -145,6 +150,7 @@ public abstract class ListTest {
 
     @Test
     void testIsEmpty() {
+        assertTrue(list.isEmpty());
         list.add("A");
         assertFalse(list.isEmpty());
     }
@@ -181,5 +187,35 @@ public abstract class ListTest {
         list.add("B");
         list.add("C");
         assertEquals("[A, B, C]", list.toString());
+    }
+
+    @Test
+    void testIteratorNextAndRemove() {
+        list.add("A");
+        list.add("B");
+        list.add("C");
+        Iterator<String> iterator = list.iterator();
+        assertEquals("A", iterator.next());
+        assertEquals("B", iterator.next());
+        assertEquals("C", iterator.next());
+        iterator.remove();
+        assertEquals("[A, B]", list.toString());
+    }
+
+    @Test
+    void testIteratorNextIfTheElementDoesNotExist() {
+        list.add("A");
+        Iterator<String> iterator = list.iterator();
+        Assertions.assertThrows(NoSuchElementException.class, () -> {
+            iterator.next();
+            iterator.next();
+        });
+    }
+
+    @Test
+    void testIteratorRemoveIfTheElementDoesNotExist() {
+        list.add("A");
+        Iterator<String> iterator = list.iterator();
+        Assertions.assertThrows(IllegalStateException.class, iterator::remove);
     }
 }

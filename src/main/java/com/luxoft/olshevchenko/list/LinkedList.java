@@ -1,5 +1,7 @@
 package com.luxoft.olshevchenko.list;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -167,6 +169,52 @@ public class LinkedList<E> implements List<E>{
         return currentNode;
     }
 
+    @Override
+    public Iterator<E> iterator() {
+        return new MyIterator();
+    }
+
+    private class MyIterator implements Iterator<E> {
+        private Node<E> currentNode;
+        private Node<E> nextNode = head;
+
+        @Override
+        public boolean hasNext() {
+            return nextNode != null;
+        }
+
+        @Override
+        public E next() {
+            if (hasNext()) {
+                E value = nextNode.value;
+                currentNode = nextNode;
+                nextNode = nextNode.next;
+                return value;
+            } else {
+                throw new NoSuchElementException("The element does not exist");
+            }
+        }
+
+        @Override
+        public void remove() {
+            if (currentNode == null) {
+                throw new IllegalStateException("The element to remove is not identified");
+            } else {
+                if (currentNode == head) {
+                    head = currentNode.next;
+                    head.prev = null;
+                } else if (currentNode == tail) {
+                    tail = currentNode.prev;
+                    tail.next = null;
+                } else {
+                    currentNode.prev.next = currentNode.next;
+                    currentNode.next.prev = currentNode.prev;
+                }
+            }
+            size--;
+        }
+    }
+
     private static class Node<E> {
         private E value;
         private Node<E> next;
@@ -176,10 +224,7 @@ public class LinkedList<E> implements List<E>{
             this.value = value;
         }
 
-        @Override
-        public String toString() {
-            return (String) value;
-        }
+
     }
 
 }
