@@ -2,6 +2,7 @@ package com.luxoft.olshevchenko.list;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
@@ -24,6 +25,7 @@ public abstract class ListTest {
     protected abstract List<String> getList();
 
     @Test
+    @DisplayName("Test Add method and capacity increase")
     void testAddAndCapacityIncrease() {
         list.add("A");
         list.add("B");
@@ -42,6 +44,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Add and Remove method if index does not exceed bounds")
     void testAddIfIndexInBounds() {
         list.add("A",0);
         list.add("B",1);
@@ -56,6 +59,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Add method if index exceeds bounds")
     void testAddIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
@@ -64,18 +68,7 @@ public abstract class ListTest {
     }
 
     @Test
-    void testRemoveIfIndexInBounds() {
-        list.add("A");
-        list.add("B");
-        list.add("C");
-        assertEquals("C", list.remove(2));
-        assertEquals("B", list.remove(1));
-        assertEquals("A", list.remove(0));
-        assertEquals(0, list.size());
-        assertTrue(list.isEmpty());
-    }
-
-    @Test
+    @DisplayName("Test Remove method if index exceeds bounds")
     void testRemoveIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
@@ -84,6 +77,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Get method if index does not exceed bounds")
     void testGetIfIndexInBounds() {
         list.add("A");
         list.add("B");
@@ -95,6 +89,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Get method if index exceeds bounds")
     void testGetIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
@@ -103,6 +98,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Set method if index does not exceed bounds")
     void testSetIfIndexInBounds() {
         list.add("A");
         list.add("B");
@@ -119,6 +115,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Set method if index exceeds bounds")
     void testSetIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
@@ -127,6 +124,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Clear method")
     void testClear() {
         list.add("A");
         list.add("B");
@@ -136,6 +134,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Size change method")
     void testSizeChange() {
         list.add("A");
         list.add("B");
@@ -149,6 +148,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test IsEmpty method")
     void testIsEmpty() {
         assertTrue(list.isEmpty());
         list.add("A");
@@ -156,7 +156,8 @@ public abstract class ListTest {
     }
 
     @Test
-    void contains() {
+    @DisplayName("Test Contains method")
+    void testContains() {
         list.add("A");
         list.add("B");
         assertTrue(list.contains("A"));
@@ -164,6 +165,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test IndexOf method")
     public void testIndexOf(){
         list.add("A");
         list.add("B");
@@ -173,6 +175,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test LastIndexOf method")
     public void testLastIndexOf(){
         list.add("A");
         list.add("B");
@@ -182,6 +185,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test ToString method")
     public void testToString(){
         list.add("A");
         list.add("B");
@@ -190,6 +194,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Iterator Next and Remove methods")
     void testIteratorNextAndRemove() {
         list.add("A");
         list.add("B");
@@ -203,6 +208,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Iterator Next method if the element does not exist")
     void testIteratorNextIfTheElementDoesNotExist() {
         list.add("A");
         Iterator<String> iterator = list.iterator();
@@ -213,6 +219,7 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Iterator Remove method if the element does not exist")
     void testIteratorRemoveIfTheElementDoesNotExist() {
         list.add("A");
         Iterator<String> iterator = list.iterator();

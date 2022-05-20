@@ -1,9 +1,6 @@
 package com.luxoft.olshevchenko.list;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * @author Oleksandr Shevchenko
@@ -33,6 +30,7 @@ public class ArrayList<E> implements List<E> {
         if (array.length == size + 1) {
             E [] tempArray = (E[]) new Object[(int) (array.length * LOAD_FACTOR)];
             System.arraycopy(array, 0, tempArray, 0, size);
+            trimToSize();
             array = tempArray;
         }
         if (index <= size && index >= 0) {
@@ -152,6 +150,10 @@ public class ArrayList<E> implements List<E> {
     @Override
     public Iterator<E> iterator() {
         return new MyIterator();
+    }
+
+    public void trimToSize() {
+        array = Arrays.copyOf(array, size);
     }
 
     private class MyIterator implements Iterator<E> {
