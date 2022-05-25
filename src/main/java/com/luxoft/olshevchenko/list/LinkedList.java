@@ -163,9 +163,18 @@ public class LinkedList<E> implements List<E>{
 
     private Node<E> getNodeByIndex(int index) {
         Node<E> currentNode = head;
+        if (index == size - 1){
+            currentNode = tail;
+        } else if (index <= size / 2){
             for (int i = 0; i < index; i++) {
                 currentNode = currentNode.next;
             }
+        } else if (index > size / 2){
+            for (int i = size - 1; i > index; i--) {
+                currentNode = tail;
+                currentNode = currentNode.prev;
+            }
+        }
         return currentNode;
     }
 
