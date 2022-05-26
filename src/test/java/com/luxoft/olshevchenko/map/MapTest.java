@@ -63,12 +63,6 @@ public abstract class MapTest {
     @Test
     @DisplayName("Test Put method in the same bucket and check Get if this element correct")
     void testPutInTheSameBucketAndCheckGetIfThisElementCorrect() {
-        originalMap.put("A", 1);
-        originalMap.put("B", 2);
-        originalMap.put("C", 3);
-        originalMap.put("C", 4);
-        assertEquals(3, originalMap.size());
-
         map.put("A", 1);
         map.put("B", 2);
         map.put("C", 3);
@@ -136,9 +130,7 @@ public abstract class MapTest {
         map.put("A", 1);
         map.put("B", 2);
         map.put("C", 3);
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            map.remove("D");
-        });
+        Assertions.assertThrows(IllegalStateException.class, () -> map.remove("D"));
     }
 
     @Test

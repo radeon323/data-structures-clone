@@ -16,9 +16,10 @@ public class HashMap<K, V> implements Map<K, V> {
     private int size;
 
     public HashMap() {
-        buckets = new ArrayList[INITIAL_CAPACITY];
+        this(INITIAL_CAPACITY);
     }
 
+    @SuppressWarnings("unchecked")
     public HashMap(int length) {
         buckets = new ArrayList[length];
     }
@@ -98,8 +99,6 @@ public class HashMap<K, V> implements Map<K, V> {
         for (List<Entry<K, V>> bucket : buckets) {
             if (bucket != null) {
                 stringJoiner.add(bucket.toString());
-            } else {
-                bucket = new ArrayList<>();
             }
         }
         return stringJoiner.toString();
@@ -170,7 +169,7 @@ public class HashMap<K, V> implements Map<K, V> {
 
 
     private static class Entry<K, V> implements Map.Entry<K, V> {
-        private K key;
+        private final K key;
         private V value;
 
         private Entry(K key, V value) {

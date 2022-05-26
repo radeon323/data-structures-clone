@@ -16,6 +16,7 @@ public class ArrayList<E> implements List<E> {
         this(DEFAULT_CAPACITY);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList(int capacity) {
         this.array = (E[]) new Object[capacity];
     }
@@ -44,7 +45,7 @@ public class ArrayList<E> implements List<E> {
         if (index < size && index >= 0) {
             E result = array[index];
             for (int i = 0; i < size; i++) {
-                if (Objects.equals(array[i], array[index])){
+                if (array[i].equals(array[index])){
                     array[i] = array[i+1];
                 }
             }
@@ -140,6 +141,7 @@ public class ArrayList<E> implements List<E> {
         return stringJoiner.toString();
     }
 
+    @SuppressWarnings("unchecked")
     private void ensureCapacity() {
         E [] tempArray = (E[]) new Object[(int) (array.length * LOAD_FACTOR)];
         System.arraycopy(array, 0, tempArray, 0, array.length);
@@ -157,7 +159,7 @@ public class ArrayList<E> implements List<E> {
     }
 
     private class MyIterator implements Iterator<E> {
-        private int index = 0;
+        private int index;
 
         @Override
         public boolean hasNext() {
