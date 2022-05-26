@@ -50,7 +50,7 @@ public class HashMap<K, V> implements Map<K, V> {
         V resultValue = null;
         List<Entry<K, V>> bucket = getBucket(key);
         if (bucket.isEmpty()) {
-            throw new IllegalStateException("The bucket corresponding to the key "+ key +" is empty");
+            return null;
         } else {
             for (Entry<K, V> entry : bucket) {
                 if (entry.key.equals(key)) {

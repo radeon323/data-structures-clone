@@ -11,6 +11,9 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Oleksandr Shevchenko
+ */
 public abstract class MapTest {
     private Map<String, Integer> map;
 
@@ -85,14 +88,13 @@ public abstract class MapTest {
     }
 
     @Test
-    @DisplayName("Test Get method if bucket is empty")
+    @DisplayName("Test Get method if bucket is empty should return null")
     void testGetIfBucketIsEmpty() {
         map.put("A", 1);
         map.put("B", 2);
         map.put("C", 3);
-        Assertions.assertThrows(IllegalStateException.class, () -> {
-            map.get("D");
-        });
+        assertNull(originalMap.get("D"));
+        assertNull(map.get("D"));
     }
 
     @Test
@@ -182,9 +184,7 @@ public abstract class MapTest {
         iterator.next();
         iterator.next();
         iterator.remove();
-        assertThrows(IllegalStateException.class, () -> {
-            map.get("C");
-        });
+        assertNull(map.get("C"));
     }
 
     @Test
