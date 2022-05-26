@@ -45,7 +45,19 @@ public abstract class MapTest {
         assertEquals(5, map.size());
         map.put("F", 6);
         map.put("G", 7);
+        System.out.println(map);
         assertEquals(7, map.size());
+
+        originalMap.put("A", 1);
+        originalMap.put("B", 2);
+        originalMap.put("C", 3);
+        originalMap.put("D", 4);
+        originalMap.put("E", 5);
+        assertEquals(5, originalMap.size());
+        originalMap.put("F", 6);
+        originalMap.put("G", 7);
+        System.out.println(originalMap);
+        assertEquals(7, originalMap.size());
     }
 
     @Test
@@ -133,15 +145,6 @@ public abstract class MapTest {
     @DisplayName("Test Size method on empty map")
     void testSizeOnEmptyMap() {
         assertEquals(0, map.size());
-    }
-
-    @Test
-    @DisplayName("Test ToString method")
-    void testToString() {
-        map.put("A", 1);
-        map.put("B", 2);
-        map.put("C", 3);
-        assertEquals("{[A=1], [B=2], [C=3]}", map.toString());
     }
 
     @Test

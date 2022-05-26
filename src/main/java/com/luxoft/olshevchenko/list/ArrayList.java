@@ -13,11 +13,11 @@ public class ArrayList<E> implements List<E> {
     private E [] array;
 
     public ArrayList() {
-        this.array = (E[]) new Object[DEFAULT_CAPACITY];
+        this(DEFAULT_CAPACITY);
     }
 
-    public ArrayList(int length) {
-        this.array = (E[]) new Object[length];
+    public ArrayList(int capacity) {
+        this.array = (E[]) new Object[capacity];
     }
 
     @Override
@@ -27,14 +27,11 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public void add(E value, int index) {
-        if (array.length == size + 1) {
-            E [] tempArray = (E[]) new Object[(int) (array.length * LOAD_FACTOR)];
-            System.arraycopy(array, 0, tempArray, 0, size);
-            trimToSize();
-            array = tempArray;
+        if (size == array.length) {
+            ensureCapacity();
         }
         if (index <= size && index >= 0) {
-            System.arraycopy(array, index, array, index + 1, size - index + 1);
+            System.arraycopy(array, index, array, index + 1, size - index);
             array[index] = value;
             size++;
         } else {
@@ -64,7 +61,7 @@ public class ArrayList<E> implements List<E> {
             throw new IndexOutOfBoundsException("Index is out of bounds");
         }
         if (!isEmpty()) {
-            return (E) array[index];
+            return array[index];
         } else {
             throw new IllegalStateException("List is empty");
         }
@@ -77,7 +74,7 @@ public class ArrayList<E> implements List<E> {
         }
         if (!isEmpty()) {
             array[index] = value;
-            return (E) array[index];
+            return array[index];
         } else {
             throw new IllegalStateException("List is empty");
         }
@@ -108,15 +105,13 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public int indexOf(E value) {
-        int index = -1;
         if (!isEmpty()) {
             for (int i = 0; i < size; i++) {
-                if (Objects.equals(array[i], value)) {
-                    index = i;
-                    break;
+                if (array[i].equals(value)) {
+                    return i;
                 }
             }
-            return index;
+            return -1;
         } else {
             throw new IllegalStateException("List is empty");
         }
@@ -124,15 +119,13 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public int lastIndexOf(E value) {
-        int index = -1;
         if (!isEmpty()) {
             for (int i = size-1; i >= 0; i--) {
-                if (Objects.equals(array[i], value)) {
-                    index = i;
-                    break;
+                if (array[i].equals(value)) {
+                    return i;
                 }
             }
-            return index;
+            return -1;
         } else {
             throw new IllegalStateException("List is empty");
         }
@@ -147,13 +140,20 @@ public class ArrayList<E> implements List<E> {
         return stringJoiner.toString();
     }
 
-    @Override
-    public Iterator<E> iterator() {
-        return new MyIterator();
+    private void ensureCapacity() {
+        E [] tempArray = (E[]) new Object[(int) (array.length * LOAD_FACTOR)];
+        System.arraycopy(array, 0, tempArray, 0, array.length);
+        trimToSize();
+        array = tempArray;
     }
 
     public void trimToSize() {
         array = Arrays.copyOf(array, size);
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new MyIterator();
     }
 
     private class MyIterator implements Iterator<E> {
@@ -169,7 +169,7 @@ public class ArrayList<E> implements List<E> {
             if (hasNext()) {
                 return array[index++];
             } else {
-                throw new NoSuchElementException("The element does not exist");
+                throw new NoSuchElementException("There is no next element in the list");
             }
         }
 
@@ -178,7 +178,7 @@ public class ArrayList<E> implements List<E> {
             if (index != 0) {
                 ArrayList.this.remove(index - 1);
             } else {
-                throw new IllegalStateException("The element to remove is not identified");
+                throw new IllegalStateException("Called remove method without next");
             }
         }
     }

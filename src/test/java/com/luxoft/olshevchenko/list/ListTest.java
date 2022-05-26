@@ -1,6 +1,5 @@
 package com.luxoft.olshevchenko.list;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,20 +26,10 @@ public abstract class ListTest {
     @Test
     @DisplayName("Test Add method and capacity increase")
     void testAddAndCapacityIncrease() {
-        list.add("A");
-        list.add("B");
-        list.add("C");
-        list.add("D");
-        list.add("E");
-        list.add("F");
-        list.add("G");
-        list.add("H");
-        list.add("I");
-        list.add("J");
-        list.add("K");
-        list.add("L");
-        list.add("M");
-        assertEquals(13, list.size());
+        for (int i = 0; i < 20; i++) {
+            list.add(String.valueOf(i));
+        }
+        assertEquals(20, list.size());
     }
 
     @Test
@@ -51,9 +40,9 @@ public abstract class ListTest {
         list.add("C",2);
         list.add("D",2);
         assertEquals("C", list.remove(3));
-        assertEquals("D", list.remove(2));
-        assertEquals("B", list.remove(1));
         assertEquals("A", list.remove(0));
+        assertEquals("B", list.remove(0));
+        assertEquals("D", list.remove(0));
         assertEquals(0, list.size());
         assertTrue(list.isEmpty());
     }
@@ -62,7 +51,7 @@ public abstract class ListTest {
     @DisplayName("Test Add method if index exceeds bounds")
     void testAddIfIndexOutOfBounds() {
         list.add("A");
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+        assertThrows(IndexOutOfBoundsException.class, () -> {
             list.add("B",2);
         });
     }
@@ -71,7 +60,7 @@ public abstract class ListTest {
     @DisplayName("Test Remove method if index exceeds bounds")
     void testRemoveIfIndexOutOfBounds() {
         list.add("A");
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+        assertThrows(IndexOutOfBoundsException.class, () -> {
             list.remove(1);
         });
     }
@@ -92,7 +81,7 @@ public abstract class ListTest {
     @DisplayName("Test Get method if index exceeds bounds")
     void testGetIfIndexOutOfBounds() {
         list.add("A");
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+        assertThrows(IndexOutOfBoundsException.class, () -> {
             list.get(1);
         });
     }
@@ -118,9 +107,7 @@ public abstract class ListTest {
     @DisplayName("Test Set method if index exceeds bounds")
     void testSetIfIndexOutOfBounds() {
         list.add("A");
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-            list.set("D", 1);
-        });
+        assertThrows(IndexOutOfBoundsException.class, () -> list.set("D", 1));
     }
 
     @Test
@@ -172,6 +159,7 @@ public abstract class ListTest {
         list.add("A");
         list.add("C");
         assertEquals(0 , list.indexOf("A"));
+        assertNotEquals(2 , list.indexOf("A"));
     }
 
     @Test
@@ -181,17 +169,10 @@ public abstract class ListTest {
         list.add("B");
         list.add("A");
         list.add("C");
+        assertNotEquals(0 , list.lastIndexOf("A"));
         assertEquals(2 , list.lastIndexOf("A"));
     }
 
-    @Test
-    @DisplayName("Test ToString method")
-    public void testToString(){
-        list.add("A");
-        list.add("B");
-        list.add("C");
-        assertEquals("[A, B, C]", list.toString());
-    }
 
     @Test
     @DisplayName("Test Iterator Next and Remove methods")
@@ -204,7 +185,11 @@ public abstract class ListTest {
         assertEquals("B", iterator.next());
         assertEquals("C", iterator.next());
         iterator.remove();
-        assertEquals("[A, B]", list.toString());
+        assertEquals("A", list.get(0));
+        assertEquals("B", list.get(1));
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            assertNull(list.get(2));
+        });
     }
 
     @Test
@@ -212,7 +197,7 @@ public abstract class ListTest {
     void testIteratorNextIfTheElementDoesNotExist() {
         list.add("A");
         Iterator<String> iterator = list.iterator();
-        Assertions.assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(NoSuchElementException.class, () -> {
             iterator.next();
             iterator.next();
         });
@@ -223,6 +208,6 @@ public abstract class ListTest {
     void testIteratorRemoveIfTheElementDoesNotExist() {
         list.add("A");
         Iterator<String> iterator = list.iterator();
-        Assertions.assertThrows(IllegalStateException.class, iterator::remove);
+        assertThrows(IllegalStateException.class, iterator::remove);
     }
 }

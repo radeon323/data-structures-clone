@@ -28,21 +28,17 @@ public class HashMap<K, V> implements Map<K, V> {
         if (buckets.length == size) {
             grow();
         }
-        V resultValue = null;
         List<Entry<K, V>> bucket = getBucket(key);
-        if (bucket.isEmpty()) {
-            bucket.add(new Entry<>(key, value));
-            resultValue = value;
-            size++;
-        } else {
-            for (Entry<K, V> entry : bucket) {
-                if (entry.key.equals(key)) {
-                    resultValue = entry.value;
-                    entry.value = value;
-                }
+        for (Entry<K, V> entry : bucket) {
+            if (entry.key.equals(key)) {
+                V resultValue = entry.value;
+                entry.value = value;
+                return resultValue;
             }
         }
-        return resultValue;
+        bucket.add(new Entry<>(key, value));
+        size++;
+        return null;
     }
 
     @Override
@@ -110,20 +106,15 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private void grow() {
-        List<Entry<K, V>>[] newBuckets = new ArrayList[INITIAL_CAPACITY * GROW_CONST];
-        List<Entry<K, V>>[] tempBuckets = new ArrayList[buckets.length];
-        System.arraycopy(buckets, 0, tempBuckets, 0, buckets.length);
-        buckets = newBuckets;
-        size = 0;
-        for (List<Entry<K, V>> bucket : tempBuckets) {
-            for (Entry<K, V> entry : bucket) {
-                put(entry.key, entry.value);
-            }
+        HashMap<K, V> newHashMap = new HashMap<>(INITIAL_CAPACITY * GROW_CONST);
+        for (Map.Entry<K, V> entry : this) {
+            newHashMap.put(entry.getKey(), entry.getValue());
         }
+        buckets = newHashMap.buckets;
     }
 
     private List<Entry<K, V>> getBucket(K key) {
-        int index = key.hashCode() % buckets.length;
+        int index = getIndex(key);
         if (buckets[index] == null) {
             buckets[index] = new ArrayList<>();
         }
@@ -131,7 +122,7 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private int getIndex(K key) {
-        return key.hashCode() % buckets.length;
+        return Math.abs(key.hashCode()) % buckets.length;
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 public class LinkedList<E> implements List<E>{
     private Node<E> head;
     private Node<E> tail;
-    private int size = 0;
+    private int size;
 
 
     @Override
@@ -21,53 +21,41 @@ public class LinkedList<E> implements List<E>{
 
     @Override
     public void add(E value, int index) {
-        if (index > size || index < 0) {
+        if (index <= size && index >= 0) {
+            Node<E> newNode = new Node<>(value);
+            if (head == null) {
+                head = tail = newNode;
+            } else if (index == 0) {
+                head.prev = newNode;
+                newNode.next = head;
+                head = newNode;
+            } else if (index == size) {
+                tail.next = newNode;
+                newNode.prev = tail;
+                tail = newNode;
+                tail.next = null;
+            } else {
+                Node<E> prev = getNodeByIndex(index - 1);
+                prev.next.prev = newNode;
+                newNode.next = prev.next;
+                newNode.prev = prev;
+                prev.next = newNode;
+            }
+            size++;
+        } else {
             throw new IndexOutOfBoundsException("Index is out of bounds");
         }
-        Node<E> newNode = new Node<>(value);
-        if (head == null) {
-            head = tail = newNode;
-        } else if (index == 0) {
-            head.prev = newNode;
-            newNode.next = head;
-            head = newNode;
-        } else if (index == size) {
-            tail.next = newNode;
-            newNode.prev = tail;
-            tail = newNode;
-            tail.next = null;
-        } else {
-            Node<E> prev = getNodeByIndex(index - 1);
-            prev.next.prev = newNode;
-            newNode.next = prev.next;
-            newNode.prev = prev;
-            prev.next = newNode;
-        }
-        size++;
     }
 
     @Override
     public E remove(int index) {
-        if (index >= size || index < 0) {
+        if (index < size && index >= 0) {
+            Node<E> currentNode = getNodeByIndex(index);
+            removeNode(currentNode);
+            return currentNode.value;
+        } else {
             throw new IndexOutOfBoundsException("Index is out of bounds");
         }
-        Node<E> currentNode = head;
-        if (size == 1) {
-            head = tail = null;
-        } else if (index == size - 1) {
-            currentNode = tail;
-            tail = tail.prev;
-            tail.next = null;
-        } else if (index == 0) {
-            head = head.next;
-            head.prev = null;
-        } else {
-            currentNode = getNodeByIndex(index);
-            currentNode.prev.next = currentNode.next;
-            currentNode.next.prev = currentNode.prev;
-        }
-        size--;
-        return currentNode.value;
     }
 
     @Override
@@ -123,7 +111,7 @@ public class LinkedList<E> implements List<E>{
         if (!isEmpty()) {
             Node<E> currentNode = head;
             for (int i = 0; i < size; i++) {
-                if (Objects.equals(currentNode.value, value)) {
+                if (currentNode.value.equals(value)) {
                     return i;
                 }
                 currentNode = currentNode.next;
@@ -137,12 +125,12 @@ public class LinkedList<E> implements List<E>{
     @Override
     public int lastIndexOf(E value) {
         if (!isEmpty()) {
-            Node<E> current = tail;
+            Node<E> currentNode = tail;
             for (int i = size - 1; i >= 0; i--) {
-                if (Objects.equals(current.value, value)) {
+                if (currentNode.value.equals(value)) {
                     return i;
                 }
-                current = current.prev;
+                currentNode = currentNode.prev;
             }
             return -1;
         } else {
@@ -153,10 +141,10 @@ public class LinkedList<E> implements List<E>{
     @Override
     public String toString() {
         StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
-        Node<E> current = head;
-        while (current != null) {
-            stringJoiner.add(current.value.toString());
-            current = current.next;
+        Node<E> currentNode = head;
+        while (currentNode != null) {
+            stringJoiner.add(currentNode.value.toString());
+            currentNode = currentNode.next;
         }
         return stringJoiner.toString();
     }
@@ -176,6 +164,22 @@ public class LinkedList<E> implements List<E>{
             }
         }
         return currentNode;
+    }
+
+    private void removeNode(Node<E> nodeToRemove) {
+        if (size == 1) {
+            head = tail = null;
+        } else if (nodeToRemove == head) {
+            head = nodeToRemove.next;
+            head.prev = null;
+        } else if (nodeToRemove == tail) {
+            tail = nodeToRemove.prev;
+            tail.next = null;
+        } else {
+            nodeToRemove.prev.next = nodeToRemove.next;
+            nodeToRemove.next.prev = nodeToRemove.prev;
+        }
+        size--;
     }
 
     @Override
@@ -200,28 +204,19 @@ public class LinkedList<E> implements List<E>{
                 nextNode = nextNode.next;
                 return value;
             } else {
-                throw new NoSuchElementException("The element does not exist");
+                throw new NoSuchElementException("There is no next element in the list");
             }
         }
 
         @Override
         public void remove() {
             if (currentNode == null) {
-                throw new IllegalStateException("The element to remove is not identified");
+                throw new IllegalStateException("Called remove method without next");
             } else {
-                if (currentNode == head) {
-                    head = currentNode.next;
-                    head.prev = null;
-                } else if (currentNode == tail) {
-                    tail = currentNode.prev;
-                    tail.next = null;
-                } else {
-                    currentNode.prev.next = currentNode.next;
-                    currentNode.next.prev = currentNode.prev;
-                }
+                removeNode(currentNode);
             }
-            size--;
         }
+
     }
 
     private static class Node<E> {
@@ -233,7 +228,7 @@ public class LinkedList<E> implements List<E>{
             this.value = value;
         }
 
-
     }
+
 
 }
