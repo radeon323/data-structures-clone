@@ -68,7 +68,6 @@ public abstract class MapTest {
         map.put("C", 3);
         map.put("C", 4);
         assertEquals(3, map.size());
-
     }
 
     @Test

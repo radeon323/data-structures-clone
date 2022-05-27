@@ -27,7 +27,7 @@ public class HashMap<K, V> implements Map<K, V> {
     @Override
     public V put(K key, V value) {
         if (buckets.length == size) {
-            grow();
+            resize();
         }
         List<Entry<K, V>> bucket = getBucket(key);
         for (Entry<K, V> entry : bucket) {
@@ -104,7 +104,7 @@ public class HashMap<K, V> implements Map<K, V> {
         return stringJoiner.toString();
     }
 
-    private void grow() {
+    private void resize() {
         HashMap<K, V> newHashMap = new HashMap<>(INITIAL_CAPACITY * GROW_CONST);
         for (Map.Entry<K, V> entry : this) {
             newHashMap.put(entry.getKey(), entry.getValue());
@@ -113,6 +113,10 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private List<Entry<K, V>> getBucket(K key) {
+        return getBucket(buckets, key);
+    }
+
+    private List<Entry<K, V>> getBucket(List<Entry<K, V>>[] buckets, K key) {
         int index = getIndex(key);
         if (buckets[index] == null) {
             buckets[index] = new ArrayList<>();
