@@ -105,11 +105,15 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private void resize() {
-        HashMap<K, V> newHashMap = new HashMap<>(INITIAL_CAPACITY * GROW_CONST);
+        List<Entry<K, V>>[] newBuckets = new ArrayList[INITIAL_CAPACITY * GROW_CONST];
         for (Map.Entry<K, V> entry : this) {
-            newHashMap.put(entry.getKey(), entry.getValue());
+            int index = getIndex(newBuckets, entry.getKey());
+            if (newBuckets[index] == null) {
+                newBuckets[index] = new ArrayList<>();
+            }
+            newBuckets[index].add((Entry<K, V>) entry);
         }
-        buckets = newHashMap.buckets;
+        buckets = newBuckets;
     }
 
     private List<Entry<K, V>> getBucket(K key) {
@@ -117,14 +121,14 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private List<Entry<K, V>> getBucket(List<Entry<K, V>>[] buckets, K key) {
-        int index = getIndex(key);
+        int index = getIndex(buckets, key);
         if (buckets[index] == null) {
             buckets[index] = new ArrayList<>();
         }
         return buckets[index];
     }
 
-    private int getIndex(K key) {
+    private int getIndex(List<Entry<K, V>>[] buckets, K key) {
         return Math.abs(key.hashCode()) % buckets.length;
     }
 
