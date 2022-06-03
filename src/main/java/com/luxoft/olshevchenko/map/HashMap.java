@@ -139,40 +139,50 @@ public class HashMap<K, V> implements Map<K, V> {
 
     private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
         private int index;
+        private int count;
         boolean checkNext = false;
         private Iterator<Entry<K, V>> iterator;
 
         @Override
         public boolean hasNext() {
-            return index < size;
+            return count != size;
         }
 
         @Override
         public Entry<K, V> next() {
-            if (hasNext()) {
-                List<Entry<K, V>> bucket = buckets[index];
-                iterator = bucket.iterator();
-                Entry<K, V> next = iterator.next();
-                index++;
-                checkNext = true;
-                return next;
-            } else {
+            if (!hasNext()) {
                 throw new NoSuchElementException("There is no next element in the map");
             }
-
+            while (true) {
+                List<Entry<K, V>> bucket = buckets[index];
+                if (bucket == null) {
+                    index++;
+                } else {
+                    if (iterator == null) {
+                        iterator = bucket.iterator();
+                    }
+                    if (!iterator.hasNext()) {
+                        index++;
+                        iterator = null;
+                    } else {
+                        count++;
+                        checkNext = true;
+                        return iterator.next();
+                    }
+                }
+            }
         }
 
         @Override
         public void remove() {
-            if (checkNext) {
-                iterator.remove();
-                size--;
-                checkNext = false;
-            } else {
+            if (!checkNext) {
                 throw new IllegalStateException("Called remove method without next");
             }
+            iterator.remove();
+            size--;
+            count--;
+            checkNext = false;
         }
-
     }
 
 
