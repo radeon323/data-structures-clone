@@ -1,8 +1,5 @@
 package com.luxoft.olshevchenko.map;
 
-import com.luxoft.olshevchenko.list.ArrayList;
-import com.luxoft.olshevchenko.list.List;
-
 import java.util.*;
 
 /**
@@ -12,56 +9,54 @@ public class HashMap<K, V> implements Map<K, V> {
     private static final int INITIAL_CAPACITY = 5;
     private static final int GROW_CONST = 2;
 
-    private List<Entry<K, V>>[] buckets;
+    private Entry<K, V>[] buckets;
     private int size;
 
     public HashMap() {
-        this(INITIAL_CAPACITY);
+        buckets = new Entry[INITIAL_CAPACITY];
     }
 
-    @SuppressWarnings("unchecked")
-    public HashMap(int length) {
-        buckets = new ArrayList[length];
-    }
 
     @Override
     public V put(K key, V value) {
+        V resultValue;
+        int index = getIndex(buckets, key);
+        Entry<K, V> bucket = buckets[index];
         if (buckets.length == size) {
             resize();
         }
-        List<Entry<K, V>> bucket = getBucket(key);
-        for (Entry<K, V> entry : bucket) {
-            if (entry.key.equals(key)) {
-                V resultValue = entry.value;
-                entry.value = value;
-                return resultValue;
-            }
+        if (buckets[index] == null) {
+            buckets[index] = new Entry<>(key, value);
+            size++;
+            return null;
         }
-        bucket.add(new Entry<>(key, value));
-        size++;
+        if (bucket.hash == key.hashCode()) {
+            V oldValue = bucket.value;
+            Entry<K, V> currentBucket = getLastEntry(bucket);
+            Entry<K, V> newBucket = new Entry<>(key, value);
+            newBucket.value = oldValue;
+            currentBucket.next = newBucket;
+            bucket.value = value;
+            resultValue = newBucket.value;
+            return resultValue;
+        }
         return null;
     }
 
     @Override
     public V get(K key) {
-        V resultValue = null;
-        List<Entry<K, V>> bucket = getBucket(key);
-        if (bucket.isEmpty()) {
+        Entry<K, V> bucket = getBucket(key);
+        if (bucket == null) {
             return null;
         } else {
-            for (Entry<K, V> entry : bucket) {
-                if (entry.key.equals(key)) {
-                    resultValue = entry.value;
-                }
-            }
+            return bucket.value;
         }
-        return resultValue;
     }
 
     @Override
     public boolean containsKey(K key) {
-        for (Entry<K, V> entry : getBucket(key)) {
-            if (entry.key.equals(key)) {
+        for (Entry<K, V> bucket : buckets) {
+            if (bucket != null && bucket.key.equals(key)) {
                 return true;
             }
         }
@@ -70,19 +65,18 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public V remove(K key) {
-        int count = 0;
         V resultValue = null;
-        List<Entry<K, V>> bucket = getBucket(key);
-        if (bucket.isEmpty()) {
+
+        Entry<K, V> bucket = getBucket(key);
+        int index = getIndex(buckets, key);
+
+        if (getBucket(key).value == null) {
             throw new IllegalStateException("The bucket corresponding to the key " + key + " is empty");
         } else {
-            for (Entry<K, V> entry : bucket) {
-                if (entry.key.equals(key)) {
-                    resultValue = entry.value;
-                    bucket.remove(count);
-                    size--;
-                }
-                count++;
+            if (bucket.key.equals(key)) {
+                resultValue = bucket.value;
+                buckets[index] = null;
+                size--;
             }
         }
         return resultValue;
@@ -96,7 +90,7 @@ public class HashMap<K, V> implements Map<K, V> {
     @Override
     public String toString() {
         StringJoiner stringJoiner = new StringJoiner(", ", "{", "}");
-        for (List<Entry<K, V>> bucket : buckets) {
+        for (Entry<K, V> bucket : buckets) {
             if (bucket != null) {
                 stringJoiner.add(bucket.toString());
             }
@@ -105,31 +99,39 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private void resize() {
-        List<Entry<K, V>>[] newBuckets = new ArrayList[INITIAL_CAPACITY * GROW_CONST];
+        Entry<K, V>[] newBuckets = new Entry[INITIAL_CAPACITY * GROW_CONST];
         for (Map.Entry<K, V> entry : this) {
             int index = getIndex(newBuckets, entry.getKey());
             if (newBuckets[index] == null) {
-                newBuckets[index] = new ArrayList<>();
+                newBuckets[index] = (Entry<K, V>) entry;
+            } else {
+                newBuckets[index] = getLastEntry((Entry<K, V>) entry);
             }
-            newBuckets[index].add((Entry<K, V>) entry);
         }
         buckets = newBuckets;
     }
 
-    private List<Entry<K, V>> getBucket(K key) {
+    private Entry<K, V> getBucket(K key) {
         return getBucket(buckets, key);
     }
 
-    private List<Entry<K, V>> getBucket(List<Entry<K, V>>[] buckets, K key) {
+    private Entry<K, V> getBucket(Entry<K, V>[] buckets, K key) {
         int index = getIndex(buckets, key);
         if (buckets[index] == null) {
-            buckets[index] = new ArrayList<>();
+            buckets[index] = new Entry<>(key, null);
         }
         return buckets[index];
     }
 
-    private int getIndex(List<Entry<K, V>>[] buckets, K key) {
+    private int getIndex(Entry<K, V>[] buckets, K key) {
         return Math.abs(key.hashCode()) % buckets.length;
+    }
+
+    private Entry<K, V> getLastEntry(Entry<K, V> bucket) {
+        while(bucket.next != null) {
+            bucket = bucket.next;
+        }
+        return bucket;
     }
 
     @Override
@@ -139,13 +141,12 @@ public class HashMap<K, V> implements Map<K, V> {
 
     private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
         private int index;
-        private int count;
         boolean checkNext = false;
-        private Iterator<Entry<K, V>> iterator;
+        Entry<K, V> currentBucket;
 
         @Override
         public boolean hasNext() {
-            return count != size;
+            return index != size;
         }
 
         @Override
@@ -153,24 +154,14 @@ public class HashMap<K, V> implements Map<K, V> {
             if (!hasNext()) {
                 throw new NoSuchElementException("There is no next element in the map");
             }
-            while (true) {
-                List<Entry<K, V>> bucket = buckets[index];
-                if (bucket == null) {
-                    index++;
-                } else {
-                    if (iterator == null) {
-                        iterator = bucket.iterator();
-                    }
-                    if (!iterator.hasNext()) {
-                        index++;
-                        iterator = null;
-                    } else {
-                        count++;
-                        checkNext = true;
-                        return iterator.next();
-                    }
-                }
+            currentBucket = buckets[index];
+            if (currentBucket.next != null) {
+                checkNext = true;
+                return currentBucket.next;
             }
+            index++;
+            checkNext = true;
+            return currentBucket;
         }
 
         @Override
@@ -178,9 +169,8 @@ public class HashMap<K, V> implements Map<K, V> {
             if (!checkNext) {
                 throw new IllegalStateException("Called remove method without next");
             }
-            iterator.remove();
+            HashMap.this.remove(currentBucket.key);
             size--;
-            count--;
             checkNext = false;
         }
     }
@@ -189,10 +179,14 @@ public class HashMap<K, V> implements Map<K, V> {
     private static class Entry<K, V> implements Map.Entry<K, V> {
         private final K key;
         private V value;
+        private Entry<K, V> next;
+        private int hash;
 
         private Entry(K key, V value) {
             this.key = key;
             this.value = value;
+            this.hash = getHash(key);
+            this.next = null;
         }
 
         @Override
@@ -214,7 +208,19 @@ public class HashMap<K, V> implements Map<K, V> {
         public String toString() {
             return key + "=" + value;
         }
+
+        private int getHash(K key) {
+            if (key != null) {
+                hash = key.hashCode();
+            } else {
+                throw new IllegalStateException("The KEY cannot be null");
+            }
+            return hash;
+        }
+
+
     }
+
 
 
 }

@@ -45,6 +45,8 @@ public abstract class MapTest {
         assertEquals(5, map.size());
         map.put("F", 6);
         map.put("G", 7);
+        map.put("G", 8);
+        map.put("G", 9);
         System.out.println(map);
         assertEquals(7, map.size());
 
@@ -59,6 +61,7 @@ public abstract class MapTest {
         System.out.println(originalMap);
         assertEquals(7, originalMap.size());
     }
+
 
     @Test
     @DisplayName("Test Put method in the same bucket and check Get if this element correct")
@@ -78,6 +81,7 @@ public abstract class MapTest {
         map.put("C", 3);
         assertEquals(1, map.put("A", 4));
         assertEquals(4, map.put("A", 5));
+        assertNull(map.put("D", 5));
     }
 
     @Test
@@ -174,10 +178,13 @@ public abstract class MapTest {
         map.put("A", 1);
         map.put("B", 2);
         map.put("C", 3);
+        map.put("C", 4);
+        System.out.println(map);
         iterator.next();
         iterator.next();
         iterator.next();
         iterator.remove();
+        System.out.println(map);
         assertNull(map.get("C"));
     }
 
