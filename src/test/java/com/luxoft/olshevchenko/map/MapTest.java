@@ -5,9 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.*;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,40 +36,33 @@ public abstract class MapTest {
     @Test
     @DisplayName("Test Put method and grow and check size")
     void testPutAndGrowAndCheckSize() {
-        map.put("A", 1);
         map.put("B", 2);
-        map.put("C", 3);
-        map.put("D", 4);
-        map.put("E", 5);
+        map.put("G", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
+        map.put("AaBB", 6);
         assertEquals(5, map.size());
-        map.put("F", 6);
-        map.put("G", 7);
-        map.put("G", 8);
-        map.put("G", 9);
-        System.out.println(map);
-        assertEquals(7, map.size());
-
-        originalMap.put("A", 1);
-        originalMap.put("B", 2);
-        originalMap.put("C", 3);
-        originalMap.put("D", 4);
-        originalMap.put("E", 5);
-        assertEquals(5, originalMap.size());
-        originalMap.put("F", 6);
-        originalMap.put("G", 7);
-        System.out.println(originalMap);
-        assertEquals(7, originalMap.size());
+        map.put("AaAaAa", 6);
+        map.put("AaAaBB", 7);
+        map.put("AaBBAa", 8);
+        map.put("AaBBBB", 9);
+        assertEquals(9, map.size());
     }
-
 
     @Test
     @DisplayName("Test Put method in the same bucket and check Get if this element correct")
     void testPutInTheSameBucketAndCheckGetIfThisElementCorrect() {
-        map.put("A", 1);
         map.put("B", 2);
-        map.put("C", 3);
-        map.put("C", 4);
-        assertEquals(3, map.size());
+        map.put("G", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
+        map.put("AaBB", 6);
+        assertEquals(2, map.get("B"));
+        assertEquals(3, map.get("G"));
+        assertEquals(4, map.get("AaAa"));
+        assertEquals(5, map.get("BBBB"));
+        assertEquals(6, map.get("AaBB"));
+        assertEquals(5, map.size());
     }
 
     @Test
@@ -85,15 +77,21 @@ public abstract class MapTest {
     }
 
     @Test
-    @DisplayName("Test Get method")
-    void testGet() {
+    @DisplayName("Test Put method in the same bucket differ values and check Get if this element correct")
+    void testPutInTheSameBucketDifferValuesAndCheckGetIfThisElementCorrect() {
         map.put("A", 1);
-        map.put("B", 2);
-        map.put("C", 3);
-        assertEquals(1, map.get("A"));
-        assertEquals(2, map.get("B"));
-        assertEquals(3, map.get("C"));
-        assertEquals(3, map.size());
+        map.put("A", 2);
+        map.put("A", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
+        map.put("AaBB", 6);
+        map.put("BBAa", 7);
+        assertEquals(3, map.get("A"));
+        assertEquals(4, map.get("AaAa"));
+        assertEquals(5, map.get("BBBB"));
+        assertEquals(6, map.get("AaBB"));
+        assertEquals(7, map.get("BBAa"));
+        assertEquals(5, map.size());
     }
 
     @Test
@@ -102,29 +100,41 @@ public abstract class MapTest {
         map.put("A", 1);
         map.put("B", 2);
         map.put("C", 3);
-        assertNull(originalMap.get("D"));
         assertNull(map.get("D"));
     }
 
     @Test
     @DisplayName("Test Contains method")
     void testContains() {
-        map.put("A", 1);
         map.put("B", 2);
-        assertTrue(map.containsKey("A"));
+        map.put("G", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
+        map.put("AaBB", 6);
+        assertTrue(map.containsKey("B"));
+        assertTrue(map.containsKey("G"));
+        assertTrue(map.containsKey("AaAa"));
+        assertTrue(map.containsKey("BBBB"));
+        assertTrue(map.containsKey("AaBB"));
         assertFalse(map.containsKey("C"));
     }
 
     @Test
     @DisplayName("Test Remove method and check removed value")
     void testRemove() {
-        map.put("A", 1);
         map.put("B", 2);
-        map.put("C", 3);
-        assertEquals(1, map.remove("A"));
+        map.put("G", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
+        map.put("AaBB", 6);
+        assertEquals(5, map.remove("BBBB"));
+        assertNull(map.get("BBBB"));
         assertEquals(2, map.get("B"));
-        assertEquals(3, map.get("C"));
-        assertEquals(2, map.size());
+        assertEquals(3, map.get("G"));
+        assertEquals(4, map.get("AaAa"));
+        assertEquals(6, map.get("AaBB"));
+        assertNull(map.get("BBBB"));
+        assertEquals(4, map.size());
     }
 
     @Test
@@ -176,25 +186,34 @@ public abstract class MapTest {
     void testIteratorNextAndGetAfterRemove() {
         Iterator<Map.Entry<String, Integer>> iterator = map.iterator();
         map.put("A", 1);
-        map.put("B", 2);
-        map.put("C", 3);
-        map.put("C", 4);
-        System.out.println(map);
+        map.put("A", 2);
+        map.put("A", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
+        map.put("AaBB", 6);
+        map.put("BBAa", 7);
+        assertEquals(5, map.size());
         iterator.next();
         iterator.next();
         iterator.next();
         iterator.remove();
-        System.out.println(map);
+        assertNull(map.get("BBBB"));
+        assertEquals(3, map.get("A"));
+        assertEquals(4, map.get("AaAa"));
+        assertEquals(6, map.get("AaBB"));
+        assertEquals(7, map.get("BBAa"));
+        assertNull(map.get("BBBB"));
+        assertEquals(4, map.size());
         assertNull(map.get("C"));
     }
 
     @Test
-    @DisplayName("Test Iterator Next method and Get after Remove")
+    @DisplayName("Test Iterator Next method when no next element")
     void testIteratorNextWhenNoNextElement() {
         Iterator<Map.Entry<String, Integer>> iterator = map.iterator();
-        map.put("A", 1);
-        map.put("B", 2);
-        map.put("C", 3);
+        map.put("A", 3);
+        map.put("AaAa", 4);
+        map.put("BBBB", 5);
         assertThrows(NoSuchElementException.class, () -> {
             iterator.next();
             iterator.next();
