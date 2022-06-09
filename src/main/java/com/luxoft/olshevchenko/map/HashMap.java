@@ -98,15 +98,15 @@ public class HashMap<K, V> implements Map<K, V> {
                 size--;
                 return resultValue;
             }
-        }
-        while (true) {
-            if (buckets[index].next.key.equals(key)) {
-                resultValue = buckets[index].next.value;
-                buckets[index].next = buckets[index].next.next;
-                size--;
-                return resultValue;
+            while (true) {
+                if (buckets[index].next.key.equals(key)) {
+                    resultValue = buckets[index].next.value;
+                    buckets[index].next = buckets[index].next.next;
+                    size--;
+                    return resultValue;
+                }
+                buckets[index] = buckets[index].next;
             }
-            buckets[index] = buckets[index].next;
         }
     }
 
@@ -138,18 +138,19 @@ public class HashMap<K, V> implements Map<K, V> {
         Entry<K, V>[] newBuckets = new Entry[INITIAL_CAPACITY * GROW_CONST];
         for (Map.Entry<K, V> entry : this) {
             int index = getIndex(newBuckets, entry.getKey());
-            if (newBuckets[index] == null) {
+            newBuckets[index] = (Entry<K, V>) entry;
+            while (((Entry<K, V>) entry).next != null) {
                 newBuckets[index] = (Entry<K, V>) entry;
-                while (((Entry<K, V>) entry).next != null) {
-                    newBuckets[index] = (Entry<K, V>) entry;
-                    entry = ((Entry<K, V>) entry).next;
-                }
+                entry = ((Entry<K, V>) entry).next;
             }
         }
         buckets = newBuckets;
     }
 
     private int getIndex(Entry<K, V>[] buckets, K key) {
+        if (key == null) {
+            return 0;
+        }
         return Math.abs(key.hashCode()) % buckets.length;
     }
 
