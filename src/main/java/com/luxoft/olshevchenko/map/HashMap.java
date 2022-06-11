@@ -8,39 +8,24 @@ import java.util.*;
 public class HashMap<K, V> implements Map<K, V> {
     private static final int INITIAL_CAPACITY = 5;
     private static final int GROW_CONST = 2;
+    private static final double LOAD_FACTOR = 0.75;
 
-    private Entry<K, V>[] buckets;
+    private final Entry<K, V>[] buckets;
     private int size;
 
-    @SuppressWarnings("unchecked")
     public HashMap() {
-        buckets = new Entry[INITIAL_CAPACITY];
+        this(INITIAL_CAPACITY);
+    }
+
+    @SuppressWarnings("unchecked")
+    public HashMap(int length) {
+        buckets = new Entry[length];
     }
 
 
     @Override
     public V put(K key, V value) {
-        int index = getIndex(buckets, key);
-        if (buckets.length == size) {
-            resize();
-        }
-        if (buckets[index] == null) {
-            buckets[index] = new Entry<>(key, value);
-            size++;
-            return null;
-        } else if (buckets[index].key.equals(key)){
-            while (buckets[index] != null) {
-                if (buckets[index].key.equals(key) && !buckets[index].value.equals(value)) {
-                    V resultValue = buckets[index].value;
-                    buckets[index].value = value;
-                    return resultValue;
-                }
-                buckets[index] = buckets[index].next;
-            }
-        } else if (buckets[index].hash == key.hashCode() && buckets[index].key != key) {
-            return addEntryIntoTheEndOfTheChainAndIncreaseSize(buckets, key, value);
-        }
-        return addEntryIntoTheEndOfTheChainAndIncreaseSize(buckets, key, value);
+        return put(buckets, key, value);
     }
 
     @Override
@@ -89,23 +74,24 @@ public class HashMap<K, V> implements Map<K, V> {
     public V remove(K key) {
         V resultValue;
         int index = getIndex(buckets, key);
-        if (buckets[index] == null) {
+        Entry<K, V> currentBucket = buckets[index];
+        if (currentBucket == null) {
             throw new IllegalStateException("The bucket corresponding to the key " + key + " is empty");
         } else {
-            if (buckets[index].key.equals(key)) {
-                resultValue = buckets[index].value;
+            if (currentBucket.key.equals(key)) {
+                resultValue = currentBucket.value;
                 buckets[index] = null;
                 size--;
                 return resultValue;
             }
             while (true) {
-                if (buckets[index].next.key.equals(key)) {
-                    resultValue = buckets[index].next.value;
+                if (currentBucket.next.key.equals(key)) {
+                    resultValue = currentBucket.next.value;
                     buckets[index].next = buckets[index].next.next;
                     size--;
                     return resultValue;
                 }
-                buckets[index] = buckets[index].next;
+                currentBucket = currentBucket.next;
             }
         }
     }
@@ -133,18 +119,53 @@ public class HashMap<K, V> implements Map<K, V> {
         return stringJoiner.toString();
     }
 
+    private V put(Entry<K, V>[] entries, K key, V value) {
+        if (entries.length * LOAD_FACTOR <= size) {
+            entries = resize(buckets);
+        }
+        int index = getIndex(entries, key);
+        Entry<K,V> currentBucket = entries[index];
+        if (currentBucket == null) {
+            entries[index] = new Entry<>(key, value);
+            size++;
+            return null;
+        } else {
+            if (currentBucket.key.equals(key)) {
+                V resultValue = currentBucket.value;
+                entries[index].value = value;
+                return resultValue;
+            }
+            while (currentBucket.next != null) {
+                if (currentBucket.key.equals(key)) {
+                    V resultValue = currentBucket.value;
+                    entries[index].value = value;
+                    return resultValue;
+                } else if (currentBucket.hash == key.hashCode()) {
+                    return addEntryIntoTheEndOfTheChainAndIncreaseSize(entries, key, value);
+                }
+                currentBucket = currentBucket.next;
+            }
+            return addEntryIntoTheEndOfTheChainAndIncreaseSize(entries, key, value);
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    private void resize() {
+    private Entry<K, V>[] resize(Entry<K, V>[] buckets) {
         Entry<K, V>[] newBuckets = new Entry[INITIAL_CAPACITY * GROW_CONST];
-        for (Map.Entry<K, V> entry : this) {
-            int index = getIndex(newBuckets, entry.getKey());
-            newBuckets[index] = (Entry<K, V>) entry;
-            while (((Entry<K, V>) entry).next != null) {
-                newBuckets[index] = (Entry<K, V>) entry;
-                entry = ((Entry<K, V>) entry).next;
+        for (Entry<K, V> bucket : buckets) {
+            if (bucket != null) {
+                int index = getIndex(newBuckets, bucket.getKey());
+                if (bucket.next == null) {
+                    newBuckets[index] = bucket;
+                } else {
+                    while (bucket.next != null) {
+                        newBuckets[index] = getLastEntry(bucket);
+                        bucket = bucket.next;
+                    }
+                }
             }
         }
-        buckets = newBuckets;
+        return newBuckets;
     }
 
     private int getIndex(Entry<K, V>[] buckets, K key) {
@@ -163,12 +184,11 @@ public class HashMap<K, V> implements Map<K, V> {
 
     private V addEntryIntoTheEndOfTheChainAndIncreaseSize(Entry<K, V>[] buckets, K key, V value) {
         int index = getIndex(buckets, key);
-        Entry<K, V> currentEntry = buckets[index];
-        V resultValue = currentEntry.value;
-        currentEntry = getLastEntry(currentEntry);
-        currentEntry.next = new Entry<>(key, value);
+        Entry<K, V> newEntry = new Entry<>(key, value);
+        Entry<K, V> currentEntry = getLastEntry(buckets[index]);
+        currentEntry.next = newEntry;
         size++;
-        return resultValue;
+        return currentEntry.value;
     }
 
     @Override
@@ -180,7 +200,6 @@ public class HashMap<K, V> implements Map<K, V> {
         private int index;
         private int entryCount;
         boolean checkNext = false;
-        Entry<K, V> currentEntry;
         Entry<K, V> currentBucket;
 
         @Override
@@ -195,9 +214,6 @@ public class HashMap<K, V> implements Map<K, V> {
             }
             while (true) {
                 currentBucket = buckets[index];
-                if (currentEntry != null) {
-                    currentBucket = currentEntry;
-                }
                 if (currentBucket == null) {
                     index++;
                 } else {
@@ -205,11 +221,10 @@ public class HashMap<K, V> implements Map<K, V> {
                         index++;
                         entryCount++;
                         checkNext = true;
-                        currentEntry = null;
                     } else {
                         entryCount++;
                         checkNext = true;
-                        currentEntry = currentBucket.next;
+                        currentBucket = currentBucket.next;
                     }
                     return currentBucket;
                 }
@@ -225,7 +240,6 @@ public class HashMap<K, V> implements Map<K, V> {
             checkNext = false;
         }
     }
-
 
     private static class Entry<K, V> implements Map.Entry<K, V> {
         private final K key;
@@ -271,7 +285,6 @@ public class HashMap<K, V> implements Map<K, V> {
 
 
     }
-
 
 
 }

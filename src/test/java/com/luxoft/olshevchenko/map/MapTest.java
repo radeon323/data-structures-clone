@@ -27,42 +27,48 @@ public abstract class MapTest {
     @Test
     @DisplayName("Test Put method and check size")
     void testPutAndCheckSize() {
-        map.put("A", 1);
-        map.put("B", 2);
-        map.put("C", 3);
-        assertEquals(3, map.size());
+        map.put("B", 1);
+        map.put("G", 2);
+        map.put("AaAa", 3);
+        map.put("BBBB", 4);
+        map.put("AaBB", 5);
+        assertEquals(5, map.size());
     }
 
     @Test
     @DisplayName("Test Put method and grow and check size")
     void testPutAndGrowAndCheckSize() {
-        map.put("B", 2);
-        map.put("G", 3);
-        map.put("AaAa", 4);
-        map.put("BBBB", 5);
-        map.put("AaBB", 6);
+        map.put("B", 1);
+        map.put("G", 2);
+        map.put("AaAa", 3);
+        map.put("BBBB", 4);
+        map.put("AaBB", 5);
         assertEquals(5, map.size());
-        map.put("AaAaAa", 6);
-        map.put("AaAaBB", 7);
-        map.put("AaBBAa", 8);
-        map.put("AaBBBB", 9);
-        assertEquals(9, map.size());
+        map.put("BBAa", 6);
+        map.put("AaAaAa", 7);
+        map.put("AaAaBB", 8);
+        map.put("AaBBAa", 9);
+        map.put("AaBBBB", 10);
+        assertEquals(10, map.size());
     }
 
     @Test
     @DisplayName("Test Put method in the same bucket and check Get if this element correct")
     void testPutInTheSameBucketAndCheckGetIfThisElementCorrect() {
-        map.put("B", 2);
-        map.put("G", 3);
-        map.put("AaAa", 4);
-        map.put("BBBB", 5);
-        map.put("AaBB", 6);
-        assertEquals(2, map.get("B"));
-        assertEquals(3, map.get("G"));
-        assertEquals(4, map.get("AaAa"));
-        assertEquals(5, map.get("BBBB"));
-        assertEquals(6, map.get("AaBB"));
-        assertEquals(5, map.size());
+        map.put("B", 1);
+        map.put("G", 2);
+        map.put("AaAa", 3);
+        map.put("BBBB", 4);
+        map.put("AaBB", 5);
+        map.put("BBAa", 6);
+        assertEquals(3, map.get("AaAa"));
+        assertEquals(1, map.get("B"));
+        assertEquals(2, map.get("G"));
+        assertEquals(3, map.get("AaAa"));
+        assertEquals(4, map.get("BBBB"));
+        assertEquals(5, map.get("AaBB"));
+        assertEquals(6, map.get("BBAa"));
+        assertEquals(6, map.size());
     }
 
     @Test
@@ -73,6 +79,8 @@ public abstract class MapTest {
         map.put("C", 3);
         assertEquals(1, map.put("A", 4));
         assertEquals(4, map.put("A", 5));
+        assertEquals(2, map.put("B", 0));
+        assertEquals(0, map.put("B", 10));
         assertNull(map.put("D", 5));
     }
 
@@ -106,16 +114,18 @@ public abstract class MapTest {
     @Test
     @DisplayName("Test Contains method")
     void testContains() {
-        map.put("B", 2);
-        map.put("G", 3);
-        map.put("AaAa", 4);
-        map.put("BBBB", 5);
-        map.put("AaBB", 6);
+        map.put("B", 1);
+        map.put("G", 2);
+        map.put("AaAa", 3);
+        map.put("BBBB", 4);
+        map.put("AaBB", 5);
+        map.put("BBAa", 6);
         assertTrue(map.containsKey("B"));
         assertTrue(map.containsKey("G"));
         assertTrue(map.containsKey("AaAa"));
         assertTrue(map.containsKey("BBBB"));
         assertTrue(map.containsKey("AaBB"));
+        assertTrue(map.containsKey("BBAa"));
         assertFalse(map.containsKey("C"));
     }
 
