@@ -24,6 +24,38 @@ public abstract class MapTest {
     protected abstract Map<String, Integer> getMap();
     private final java.util.Map<String, Integer> originalMap = new HashMap<>();
 
+
+    @Test
+    @DisplayName("testPutInTheSameBucket")
+    void testPutInTheSameBucket() {
+        map.put("AaAaAa", 1);
+        map.put("AaAaBB", 2);
+        map.put("AaBBAa", 3);
+        map.put("AaBBBB", 4);
+        map.put("BBAaAa", 5);
+        map.put("BBAaBB", 6);
+        map.put("BBBBAa", 7);
+        map.put("BBBBBB", 8);
+
+        map.put("A", 1);
+        map.put("B", 2);
+        map.put("C", 3);
+        map.put("D", 4);
+        map.put("E", 5);
+        map.put("F", 6);
+        map.put("G", 7);
+        map.put("H", 8);
+        assertEquals(1, map.get("AaAaAa"));
+        assertEquals(2, map.get("AaAaBB"));
+        assertEquals(3, map.get("AaBBAa"));
+        assertEquals(4, map.get("AaBBBB"));
+        assertEquals(5, map.get("BBAaAa"));
+        assertEquals(6, map.get("BBAaBB"));
+        assertEquals(7, map.get("BBBBAa"));
+        assertEquals(8, map.get("BBBBBB"));
+        assertEquals(16, map.size());
+    }
+
     @Test
     @DisplayName("Test Put method and check size")
     void testPutAndCheckSize() {
@@ -61,6 +93,7 @@ public abstract class MapTest {
         map.put("BBBB", 4);
         map.put("AaBB", 5);
         map.put("BBAa", 6);
+        System.out.println(map);
         assertEquals(3, map.get("AaAa"));
         assertEquals(1, map.get("B"));
         assertEquals(2, map.get("G"));
