@@ -93,7 +93,6 @@ public abstract class MapTest {
         map.put("BBBB", 4);
         map.put("AaBB", 5);
         map.put("BBAa", 6);
-        System.out.println(map);
         assertEquals(3, map.get("AaAa"));
         assertEquals(1, map.get("B"));
         assertEquals(2, map.get("G"));

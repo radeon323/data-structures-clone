@@ -185,6 +185,7 @@ public class HashMap<K, V> implements Map<K, V> {
         private int entryCount;
         boolean checkNext = false;
         Entry<K, V> currentBucket;
+        Entry<K, V> currentEntry;
 
         @Override
         public boolean hasNext() {
@@ -198,6 +199,9 @@ public class HashMap<K, V> implements Map<K, V> {
             }
             while (true) {
                 currentBucket = buckets[index];
+                if (currentEntry != null) {
+                    currentBucket = currentEntry;
+                }
                 if (currentBucket == null) {
                     index++;
                 } else {
@@ -205,10 +209,11 @@ public class HashMap<K, V> implements Map<K, V> {
                         index++;
                         entryCount++;
                         checkNext = true;
+                        currentEntry = null;
                     } else {
                         entryCount++;
                         checkNext = true;
-                        currentBucket = currentBucket.next;
+                        currentEntry = currentBucket.next;
                     }
                     return currentBucket;
                 }
