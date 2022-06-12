@@ -36,16 +36,13 @@ public class HashMap<K, V> implements Map<K, V> {
             return null;
         } else {
             if (currentBucket.key.equals(key)) {
-                V resultValue = currentBucket.value;
-                buckets[index].value = value;
-                return resultValue;
+                return changeValueIfKeyEquals(buckets, key, value);
             }
             while (currentBucket.next != null) {
                 if (currentBucket.key.equals(key)) {
-                    V resultValue = currentBucket.value;
-                    buckets[index].value = value;
-                    return resultValue;
-                } else if (currentBucket.hash == key.hashCode()) {
+                    return changeValueIfKeyEquals(buckets, key, value);
+                }
+                if (currentBucket.hash == key.hashCode()) {
                     return addEntryIntoTheEndOfTheChainAndIncreaseSize(buckets, key, value);
                 }
                 currentBucket = currentBucket.next;
@@ -166,6 +163,14 @@ public class HashMap<K, V> implements Map<K, V> {
         return entry;
     }
 
+    private V changeValueIfKeyEquals(Entry<K, V>[] buckets, K key, V value) {
+        int index = getIndex(buckets, key);
+        Entry<K,V> currentBucket = buckets[index];
+        V resultValue = currentBucket.value;
+        buckets[index].value = value;
+        return resultValue;
+    }
+
     private V addEntryIntoTheEndOfTheChainAndIncreaseSize(Entry<K, V>[] buckets, K key, V value) {
         int index = getIndex(buckets, key);
         Entry<K, V> newEntry = new Entry<>(key, value);
@@ -174,6 +179,7 @@ public class HashMap<K, V> implements Map<K, V> {
         size++;
         return currentEntry.value;
     }
+
 
     @Override
     public Iterator<Map.Entry<K, V>> iterator() {
@@ -229,6 +235,7 @@ public class HashMap<K, V> implements Map<K, V> {
             checkNext = false;
         }
     }
+
 
     private static class Entry<K, V> implements Map.Entry<K, V> {
         private final K key;
