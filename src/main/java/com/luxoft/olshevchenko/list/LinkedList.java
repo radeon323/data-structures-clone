@@ -70,10 +70,10 @@ public class LinkedList<E> extends AbstractList<E> implements List<E>{
     public int indexOf(E value) {
         Node<E> currentNode = head;
         for (int i = 0; i < size; i++) {
-            if (currentNode != null && currentNode.value.equals(value)) {
+            if (Objects.equals(currentNode.value, value)) {
                 return i;
             }
-            currentNode = Objects.requireNonNull(currentNode).next;
+            currentNode = currentNode.next;
         }
         return -1;
     }
@@ -82,10 +82,10 @@ public class LinkedList<E> extends AbstractList<E> implements List<E>{
     public int lastIndexOf(E value) {
         Node<E> currentNode = tail;
         for (int i = size - 1; i >= 0; i--) {
-            if (currentNode != null && currentNode.value.equals(value)) {
+            if (Objects.equals(currentNode.value, value)) {
                 return i;
             }
-            currentNode = Objects.requireNonNull(currentNode).prev;
+            currentNode = currentNode.prev;
         }
         return -1;
     }
