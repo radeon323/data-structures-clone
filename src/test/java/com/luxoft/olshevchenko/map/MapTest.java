@@ -26,7 +26,7 @@ public abstract class MapTest {
 
 
     @Test
-    @DisplayName("testPutInTheSameBucket")
+    @DisplayName("Test Put in the same bucket")
     void testPutInTheSameBucket() {
         map.put("AaAaAa", 1);
         map.put("AaAaBB", 2);
@@ -57,6 +57,30 @@ public abstract class MapTest {
     }
 
     @Test
+    @DisplayName("Test Put if key null")
+    void testPutIfKeyNull() {
+        map.put(null, 1);
+        map.put(null, 2);
+        map.put(null, 3);
+        assertEquals(3, map.get(null));
+        assertEquals(1, map.size());
+    }
+
+    @Test
+    @DisplayName("Test Remove if key null")
+    void testRemoveIfKeyNull() {
+        map.put("A", 1);
+        map.put("B", 2);
+        map.put(null, 3);
+        map.put(null, 4);
+        map.put("D", 5);
+        assertEquals(4, map.size());
+        assertEquals(4, map.get(null));
+        assertEquals(4, map.remove(null));
+        assertEquals(3, map.size());
+    }
+
+    @Test
     @DisplayName("Test Put method and check size")
     void testPutAndCheckSize() {
         map.put("B", 1);
@@ -68,8 +92,8 @@ public abstract class MapTest {
     }
 
     @Test
-    @DisplayName("Test Put method and grow and check size")
-    void testPutAndGrowAndCheckSize() {
+    @DisplayName("Test Put method and resize and check size")
+    void testPutAndResizeAndCheckSize() {
         map.put("B", 1);
         map.put("G", 2);
         map.put("AaAa", 3);
@@ -93,6 +117,8 @@ public abstract class MapTest {
         map.put("BBBB", 4);
         map.put("AaBB", 5);
         map.put("BBAa", 6);
+        map.put(null, 7);
+        map.put(null, 8);
         assertEquals(3, map.get("AaAa"));
         assertEquals(1, map.get("B"));
         assertEquals(2, map.get("G"));
@@ -100,7 +126,8 @@ public abstract class MapTest {
         assertEquals(4, map.get("BBBB"));
         assertEquals(5, map.get("AaBB"));
         assertEquals(6, map.get("BBAa"));
-        assertEquals(6, map.size());
+        assertEquals(8, map.get(null));
+        assertEquals(7, map.size());
     }
 
     @Test
@@ -141,6 +168,7 @@ public abstract class MapTest {
         map.put("B", 2);
         map.put("C", 3);
         assertNull(map.get("D"));
+        assertNull(map.get(null));
     }
 
     @Test
@@ -152,12 +180,14 @@ public abstract class MapTest {
         map.put("BBBB", 4);
         map.put("AaBB", 5);
         map.put("BBAa", 6);
+        map.put(null, 7);
         assertTrue(map.containsKey("B"));
         assertTrue(map.containsKey("G"));
         assertTrue(map.containsKey("AaAa"));
         assertTrue(map.containsKey("BBBB"));
         assertTrue(map.containsKey("AaBB"));
         assertTrue(map.containsKey("BBAa"));
+        assertTrue(map.containsKey(null));
         assertFalse(map.containsKey("C"));
     }
 
