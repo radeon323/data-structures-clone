@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +24,8 @@ public abstract class ListTest {
     }
 
     protected abstract List<String> getList();
+    private final java.util.List<String> originalArrayList = new ArrayList<>();
+    private final java.util.List<String> originalLinkedList = new LinkedList<>();
 
     @Test
     @DisplayName("Test Add method and capacity increase")
@@ -33,16 +37,29 @@ public abstract class ListTest {
     }
 
     @Test
+    @DisplayName("Test Add null")
+    void testAddNull() {
+        list.add("A");
+        list.add("B");
+        list.add("C");
+        list.add(null);
+        list.add(null);
+        assertEquals(3, list.size());
+    }
+
+    @Test
     @DisplayName("Test Add and Remove method if index does not exceed bounds")
     void testAddIfIndexInBounds() {
         list.add("A",0);
         list.add("B",1);
         list.add("C",2);
         list.add("D",2);
-        assertEquals("C", list.remove(3));
+        list.add("E",2);
+        assertEquals("D", list.remove(3));
         assertEquals("A", list.remove(0));
         assertEquals("B", list.remove(0));
-        assertEquals("D", list.remove(0));
+        assertEquals("E", list.remove(0));
+        assertEquals("C", list.remove(0));
         assertEquals(0, list.size());
         Assertions.assertTrue(list.isEmpty());
     }
@@ -52,6 +69,7 @@ public abstract class ListTest {
     void testAddIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.add("B",2));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.add("C",-1));
     }
 
     @Test
@@ -59,6 +77,7 @@ public abstract class ListTest {
     void testRemoveIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.remove(1));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.remove(-1));
     }
 
     @Test
@@ -78,6 +97,7 @@ public abstract class ListTest {
     void testGetIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.get(1));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.get(-1));
     }
 
     @Test
@@ -102,6 +122,7 @@ public abstract class ListTest {
     void testSetIfIndexOutOfBounds() {
         list.add("A");
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.set("D", 1));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.set("H", -1));
     }
 
     @Test
@@ -182,6 +203,7 @@ public abstract class ListTest {
         assertEquals("A", list.get(0));
         assertEquals("B", list.get(1));
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.get(2));
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> list.get(-1));
     }
 
     @Test
