@@ -65,7 +65,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E> {
     @Override
     public int indexOf(E value) {
         for (int i = 0; i < size; i++) {
-            if (array[i] != null && array[i].equals(value)) {
+            if (Objects.equals(array[i], value)) {
                 return i;
             }
         }
@@ -75,7 +75,7 @@ public class ArrayList<E> extends AbstractList<E> implements List<E> {
     @Override
     public int lastIndexOf(E value) {
         for (int i = size - 1; i >= 0; i--) {
-            if (array[i] != null && array[i].equals(value)) {
+            if (Objects.equals(array[i], value)) {
                 return i;
             }
         }
