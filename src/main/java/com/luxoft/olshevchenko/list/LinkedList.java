@@ -93,20 +93,14 @@ public class LinkedList<E> extends AbstractList<E> implements List<E>{
 
     private Node<E> getNode(int index) {
         Node<E> currentNode = head;
-        if (index == 0) {
-            currentNode = head;
-        } else if (index == size - 1){
-            currentNode = tail;
-        } else if (index < size / 2){
+        if (index < size / 2){
             for (int i = 0; i < index; i++) {
-                currentNode = head;
                 currentNode = currentNode.next;
             }
-        } else {
-            for (int i = size - 1; i >= index; i--) {
-                currentNode = tail;
-                currentNode = currentNode.prev;
-            }
+        }
+        currentNode = tail;
+        for (int i = size - 1; i > index; i--) {
+            currentNode = currentNode.prev;
         }
         return currentNode;
     }
